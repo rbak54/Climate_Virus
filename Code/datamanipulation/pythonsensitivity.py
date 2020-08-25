@@ -99,5 +99,5 @@ a1=varying_parameters(parms_min,parms_median,parms_max,R0,abs_req=False)
 plotting=plot.figure()
 plot_value_ranges(a1)
 plot.ylabel("psi")
-plotting.savefig("../../Writeup/draft plots/sensitivity.pdf")
+plotting.savefig("../../Writeup/sensitivity.pdf")
 #d(R0)/d(Parameter) /R0

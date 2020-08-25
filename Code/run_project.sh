@@ -8,11 +8,9 @@ mkdir ../Results
 mkdir ../Results/fromfunction
 mkdir ../Results/fromfunction/cors
 mkdir ../Writeup 
-mkdir ../Data/data_mod
 
 echo "Running Analytical Sensitivity Analysis "
 python3 datamanipulation/pythonsensitivity.py
-#cd Model
 echo "Run main integration -1 and 10 simulations"
 cd Model
 Rscript integration_Vectorisation_cov_var.R
