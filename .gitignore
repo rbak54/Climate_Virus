@@ -12,3 +12,5 @@ output*.rda
 *.nc
 allCountries.txt
 *Results*
+Data/data_wider*
+Data/deyle_edited*

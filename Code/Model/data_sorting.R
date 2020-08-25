@@ -14,15 +14,15 @@ data_influenza_full_years<-data_influenza_order_max[which(data_influenza_order_m
 #widen
 data_edited_wide<-data_influenza_full_years %>% spread(variable,value)
 #save
-for (i in unique(data_edited_wide$country)){
-  png(paste0("../../Results/Plots/climate/",i,".png"))
-      toplot<-data_edited_wide[which(data_edited_wide$country==i),]
-      plot(toplot$RH,toplot$T)
-      graphics.off()
-}
+# for (i in unique(data_edited_wide$country)){
+#   png(paste0("../../Results/Plots/climate/",i,".png"))
+#       toplot<-data_edited_wide[which(data_edited_wide$country==i),]
+#       plot(toplot$RH,toplot$T)
+#       graphics.off()
+# }
 #remove iraq because extremely high RH values- likely to be errors
-DATA<-read.csv("../../Data/population/API_SP.POP.TOTL_DS2_en_csv_v2_1217749/population.csv")
-RECENT<-DATA[,c("Country.Name","X2019")] #or midway??
+#DATA<-read.csv("../../Data/population/API_SP.POP.TOTL_DS2_en_csv_v2_1217749/population.csv")
+#RECENT<-DATA[,c("Country.Name","X2019")] #or midway??
 
 data_edited_wide <-data_edited_wide[which(data_edited_wide$country!="Iraq"),]
 

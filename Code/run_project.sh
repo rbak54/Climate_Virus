@@ -3,20 +3,23 @@
 #Script: run_Project.sh
 #Desc: runs project files to simulate and plot
 #Date: August 2020
-#from code directory
-mkdir Results
-mkdir Results/fromfunction/variance
-mkdir Results/fromfunction/covid
-mkdir Results/fromfunction/cors
-mkdir Results/fromfunction/variance/cors
-mkdir Writeup 
+#from Code directory
+mkdir ../Results
+mkdir ../Results/fromfunction
+mkdir ../Results/fromfunction/cors
+mkdir ../Writeup 
 mkdir ../Data/data_mod
+
 echo "Running Analytical Sensitivity Analysis "
 python3 datamanipulation/pythonsensitivity.py
+#cd Model
 echo "Run main integration -1 and 10 simulations"
-Rscript Model/integration_Vectorisation_cov_var.R
+cd Model
+Rscript integration_Vectorisation_cov_var.R
 echo "Run Plotting and Analysis"
-Rscript writeup/PlotsFinal.R
+cd ../writeup
+Rscript PlotsFinal.R
+echo "Finished!"
 ### note , not tested yet
 
 # to do this - copy across most recent version of all files. # link to repo and use gitignore to lose data_mod, results and writeup. #check runs

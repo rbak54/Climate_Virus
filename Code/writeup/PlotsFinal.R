@@ -3,7 +3,7 @@ source("../Model/modelling_functions.R"
 require("tidyverse")
 require("ggplot2")
 
-
+sims_range=c(1,1)
 which_best<-function(country){
   return(data_wider_means[which(data_wider_means$country==country),"meanflu"])
 }  
@@ -57,14 +57,8 @@ plot_influenza<-function(parms,sims){
   model_means$Region_Combined<-cut(abs(model_means$lat),breaks=c(0,23.5,max(abs(model_means$lat)+1)), labels=c("Tropics","Temperate"))
   model_means_summary<-model_means %>% group_by(country,Region_Combined,mismatch) %>% summarise(meanmeanR0=mean(meanR0),meanmeanI=mean(meanI),maxmeanR0=max(meanR0),maxmeanI=max(meanI),meanq=mean(meanq),.groups="keep")
 
-    #deee <- model_means %>% group_by(country,Region_Combined) %>% summarise(ranges=max(meanq)-min(meanq))
-    #deee <- model_means %>% group_by(country,Region_Combined) %>% summarise(ranges=max(meanCl)-min(meanCl))
-    ##deee <- model_means %>% group_by(country,Region_Combined) %>% summarise(ranges=max(meancr)-min(meancr))
-    #plot(deee$Region_Combined,deee$ranges)
-  #range comparisons
-
+   
   m<-model_means_summary %>%  group_by(Region_Combined,mismatch) %>% summarise(mI=mean(meanmeanI),mR=mean(meanmeanR0),maI=mean(maxmeanI),maR=mean(maxmeanR0), smI=std(meanmeanI),smR=std(meanmeanR0),smaI=std(maxmeanI),smaR=std(maxmeanR0),.groups="keep")
-  #correlation_df_means<-as_tibble(correlation_df) %>% group_by(mismatch) %>% summarise(means=mean(corsI),errors=std(corsI),.groups="keep")
   pdf(paste0("../../Writeup/",sims,parms[["climate_label"]],"rangelat.pdf"))
   print(ggplot(data=correlation_df_means_country, aes(x= abs(lat) ,y=maxs-mins))+geom_point()+xlab("Absolute Value of Latitude")+theme_bw()+ylab(paste0(parms[["climate_label_long"]]," Range"))+
           theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),text = element_text(size = 15),axis.text = element_text(size=15),axis.title = element_text(size=15))) 
@@ -111,16 +105,6 @@ plot_influenza<-function(parms,sims){
           theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),legend.position = "none",text = element_text(size = 15),axis.text = element_text(size=15),axis.title = element_text(size=15))) 
   graphics.off()
 
-  #   #for some reason mean AH is a good predictor of mismatch????????    
-
-  
-  
-    #could the reason be incorreact asumptions? 
-    #get AH and contact rates for each country
-    
-    #ggplot(model_means_2,aes(meanCl,meanR0,group=country))+geom_line() # 
-    #ggplot(model_means_2,aes(meanCl,meancr,group=country,col=best))+geom_line() # 
-    #ggplot(model_means_2,aes(meanCl,meanq,group=country,col=best))+geom_line() # 
   if(sims==1){
     ranges_comparison<-correlation_df[which(correlation_df$mismatch==0),]
     ranges_comparison<-ranges_comparison %>% group_by(Region_Combined) %>% summarise(ranges=maxs-mins,.groups="keep")  
@@ -159,11 +143,7 @@ plot_influenza<-function(parms,sims){
     pdf(paste0("../../Writeup/",parms[["climate_label"]],"sel_I_TIME_DATA.pdf"),width=15,height=5)
     
     model_means_3<-model_means_2[which(model_means_2$mismatch==1),]
-    # if (parms[["climate_label"]]=="AH"){
-    #   model_means_3<-model_means_2[which(model_means_2$country %in% c("El Salvador", "France", "Costa Rica",  "Panama","Paraguay")),] 
-    #   model_means_3$c_order = factor(model_means_3$country, levels=c( "France","Paraguay","El Salvador","Costa Rica", "Panama"))  
-    #   mult<-50
-      
+    
     model_means_3<-model_means_2[which(model_means_2$country %in% c("El Salvador", "France", "Dominican Republic",  "Senegal","Thailand")),] 
     model_means_3$c_order = factor(model_means_3$country, levels=c( "France", "Senegal","Thailand", "Dominican Republic","El Salvador"))  
     model_means_3$mismatch_cntry = paste0(model_means_3$mismatch,": ",model_means_3$country)
@@ -186,23 +166,7 @@ plot_influenza<-function(parms,sims){
     
     print(p)
     graphics.off()
-    # for (country in unique(model_means_2$country)){
-    #   model_means_4<-model_means_2[which(model_means_2$country==country),]
-    #   png(paste0("../../Writeup/loop",country,parms[["climate_label"]],"sel_I_TIME_DATA.png"),width=50*10,height=50*5)
-    #   mult<-max(model_means_4$meanI)/max(model_means_4$data,na.rm = T)
-    #   
-    #   p<-ggplot(data=model_means_4, aes(week, meanI,group=mismatch,col=mismatch))+geom_line()
-    #   p <- p + geom_line(aes(y = mult*data, colour = "Data"))
-    #   p <- p + scale_y_continuous(sec.axis = sec_axis(~./mult, name = "Data Flu Cases"))
-    #   p <- p + labs(x = "Week",
-    #                 y = "Model Number of Infectious", colour="Mismatch") +theme_bw()
-    #   p<-p+  scale_colour_manual(values=cbPalette)
-    #   p<-p+theme(text = element_text(size = 15),axis.text = element_text(size=15),axis.title = element_text(size=15)) 
-    #   print(p)
-    #   graphics.off()
-    # }
- 
-
+    
   }
   
   }
@@ -214,26 +178,21 @@ plot_influenza<-function(parms,sims){
 parms = list( mu = 2.06e-5,sigma = 0.68 ,p = 0.001, gamma =0.25,f=0.1,
               N = NA, nu = 5.07e-5, h=0.25 / 24 ,epsilon= 0.05, d=4/24,Max_cr=29.97,climate_label="Temperature",
               g=0.085,q0=-9.079,Climate_Variables=NA,climate_label_long="Temperature")
-sims=1
 
-plot_influenza(parms,sims=1)
+plot_influenza(parms,sims=sims_range[1])
+plot_influenza(parms,sims=sims_range[2])
 
-plot_influenza(parms,sims=100)
 
-#covid_plots(parms)
 parms = list( mu = 2.06e-5,sigma = 0.68 ,p = 0.001, gamma =0.25,f=0.1,
               N = NA, nu = 5.07e-5, h=0.25 / 24 ,epsilon= 0.05, d=4/24,Max_cr=29.97,climate_label="RH",
               g=0.085,q0=-9.079,Climate_Variables=NA,climate_label_long="Relative Humidity")
-
-plot_influenza(parms,sims=1)
-
-plot_influenza(parms,sims=100)
-#sims=1
+plot_influenza(parms,sims=sims_range[1])
+plot_influenza(parms,sims=sims_range[2])
 parms = list( mu = 2.06e-5,sigma = 0.68 ,p = 0.001, gamma =0.25,f=0.1,
               N = NA, nu = 5.07e-5, h=0.25 / 24 ,epsilon= 0.05, d=4/24,Max_cr=29.97,climate_label="AH",extra="Absolute Humidity",
               g=0.062,q0=-30.162,Climate_Variables=NA)
-plot_influenza(parms,sims=1)
-plot_influenza(parms,sims=100)#need t oredo rh with proportion
+plot_influenza(parms,sims=sims_range[1])
+plot_influenza(parms,sims=sims_range[2])
 
 
 pdf(paste0("../../Writeup/AHtemp.pdf"))
@@ -295,15 +254,13 @@ graphics.off()
 
 parms = list( climate_label="Temperature",Climate_Variables=NA,climate_label_long="Temperature")
 sims=1
- covid_means<-read.csv(paste0("../../Results/fromfunction/covid/1temperature_shift.csv"))
+ covid_means<-read.csv(paste0("../../Results/fromfunction/covid1Temperature.csv"))
  covid_means$lat<-latlong[covid_means$country,"V2"]
  covid_means$country<-data_wider_means_summ[covid_means$country,"country"]
  covid_means$Region<-cut(covid_means$lat,breaks=c(min(covid_means$lat)-1,-23.5,23.5,max(covid_means$lat)+1), labels=c("Southern","Tropics","Northern"))
-# shift_vec<-c(0,0.25,0.5,0.75,1)
-# covid_means$shift<-shift_vec[covid_means$shift+1]
+
  covid_means$Region_Combined<-cut(abs(covid_means$lat),breaks=c(0,23.5,max(abs(covid_means$lat)+1)), labels=c("Tropics","Temperate"))
- #covid_means$mismatch<-as.factor(covid_means$mismatch)
- bests<-read.csv("../../Results/bestmismatchtemp100.csv")
+ bests<-read.csv(paste0("../../Results/bestmismatchtemp",sims_range[2],".csv"))
  #rownames(bests)=bests[,2]
  covid_means$best_influenza<-sapply(covid_means$country,which_function,bests)
  covid_means$shift<-covid_means$mismatch-covid_means$best_influenza
@@ -314,7 +271,6 @@ sims=1
 # 
 # 
  m<-covid_means_summary %>%  group_by(Region_Combined,shift) %>% summarise(mI=mean(meanmeanI),mR=mean(meanmeanR0),maI=mean(maxmeanI),maR=mean(maxmeanR0), smI=std(meanmeanI),smR=std(meanmeanR0),smaI=std(maxmeanI),smaR=std(maxmeanR0))
-# correlation_df_means<-as_tibble(covid_means) %>% group_by(mismatch) %>% summarise(means=mean(corsI),errors=std(corsI),.groups="keep")
  maxR<-max(m$maR)
  maxI<-max(m$maI)
  
