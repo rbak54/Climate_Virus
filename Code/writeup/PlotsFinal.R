@@ -219,7 +219,7 @@ pdf(paste0("../../Writeup/",parms[["climate_label_long"]],"mismatch_vis.pdf"),wi
 p<-ggplot(data=dummy_dataframe, aes(Climate,Contact_Rate,col="Contact Rate"))+geom_line()+
   geom_line(aes(y = Survival_Rate+add, colour = "Growth Rate"))+scale_x_continuous(breaks = c(5,10,15,20,25))+
   scale_y_continuous(breaks=c(0,10,20,30),sec.axis = sec_axis(~.-add, name = "Virus Growth Rate (1/day)"))+ ylab("Human Contact Rate (1/day)")+ labs(colour="")+
-  scale_colour_manual(values = c("blue", "red"))+facet_wrap(~Mismatch,nrow=1)+xlab("Temperature")+
+  scale_colour_manual(values = c("blue", "red"))+facet_wrap(~Mismatch,nrow=1)+xlab("Temperature (degrees Celcius)")+
   theme_bw()    +theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),legend.position = "top",text = element_text(size = 15),axis.text = element_text(size=15),axis.title = element_text(size=15))
 
 print(p)
@@ -230,7 +230,7 @@ dummy_dataframe_mini<-dummy_dataframe[which(dummy_dataframe$Mismatch %in% c(0,1)
 p<-ggplot(data=dummy_dataframe_mini, aes(Climate,Contact_Rate,col="Contact Rate"))+geom_line()+
   geom_line(aes(y = Survival_Rate+add, colour = "Growth Rate"))+scale_x_continuous(breaks = c(5,10,15,20,25))+
   scale_y_continuous(breaks=c(0,10,20,30),sec.axis = sec_axis(~.-add, name = "Virus Growth Rate (1/day)"))+ ylab("Human Contact Rate (1/day)")+ labs(colour="")+
-  scale_colour_manual(values = c("blue", "red"))+facet_wrap(~Mismatch,nrow=1)+xlab("Temperature")+
+  scale_colour_manual(values = c("blue", "red"))+facet_wrap(~Mismatch,nrow=1)+xlab("Temperature (degrees Celcius)")+
   theme_bw()    +theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),legend.position = "top",text = element_text(size = 15),axis.text = element_text(size=15),axis.title = element_text(size=15))
 
 print(p)
@@ -300,9 +300,11 @@ trop<-trop[which(trop$shift==0),]
 noshift<-covid_means[which(covid_means$shift==0),]
 noshift$Country<-noshift$country
 selected_countries<-noshift[which(noshift$country %in% c("United Kingdom", "Cambodia","India","Australia","Niger")),]
+cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
 pdf(paste0("../../Writeup/selectedseriesR0",".pdf"),width=10,height=5)
-print(ggplot(data=selected_countries,aes(week,meanR0,group=Country,color=Region))+geom_line()+theme_bw()+ylab("R0")+xlab("Week")+
-        theme(legend.position="bottom",text = element_text(size = 15),axis.text = element_text(size=15),axis.title = element_text(size=15))+facet_wrap(c("Country"),nrow=1)+
+print(ggplot(data=selected_countries,aes(week,meanR0,group=Country,color=Region))+geom_line(size=1.5)+theme_bw()+ylab("R0")+xlab("Week")+
+        theme(legend.position="bottom",text = element_text(size = 15),axis.text = element_text(size=15),axis.title = element_text(size=15))+
+        facet_wrap(c("Country"),nrow=1)+  scale_colour_manual(values=cbPalette[c(2,3,8)])+
         theme(strip.background = element_blank(), strip.text.x = element_blank())+
         theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),text = element_text(size = 15),axis.text = element_text(size=15),axis.title = element_text(size=15)))
 graphics.off()
@@ -348,18 +350,13 @@ print(ggplot(data=correlation_df_TE, aes(x= as.factor(mismatch),y= corsI)) +geom
 graphics.off() 
 
 
-
-
-
-
 pdf(paste0("../../Writeup/AHtemp.pdf"))
-ggplot(data_wider_means,aes(meantemp,meanAH ))+geom_point()+theme_bw()+ylab("Absolute Humidity")+xlab("Temperature")+
+ggplot(data_wider_means,aes(meantemp,meanAH ))+geom_point()+theme_bw()+ylab("Absolute Humidity (gram/m^3)")+xlab("Temperature (degrees Celcius)")+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),text = element_text(size = 15),axis.text = element_text(size=15),axis.title = element_text(size=15)) 
 graphics.off()#covid_plots(parms)
 
 pdf(paste0("../../Writeup/RHtemp.pdf"))
-ggplot(data_wider_means,aes(meantemp,meanRH ))+geom_point()+theme_bw()+ylab("Relative Humidity")+xlab("Temperature")+
+ggplot(data_wider_means,aes(meantemp,meanRH ))+geom_point()+theme_bw()+ylab("Relative Humidity (%)")+xlab("Temperature (degrees Celcius)")+
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),text = element_text(size = 15),axis.text = element_text(size=15),axis.title = element_text(size=15)) 
 graphics.off()#covid_plots(parms)
-
 
