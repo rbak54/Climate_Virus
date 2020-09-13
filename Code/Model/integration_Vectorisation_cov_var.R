@@ -60,14 +60,11 @@ integration_general<-function(parms,sims,time){
       
       if(parms[["climate_label"]]=="Temperature"){
         peak_contact_seq<-seq(data_wider_means_summ[location_index,"minT"],data_wider_means_summ[location_index,"maxT"],length.out=5)
-        #peak_contact_seq<-seq(-22.774,26.865,length.out=5)
         for (i in peak_contact_seq){
           #difference between temperature where contact rate is highest and lowest temperature in range (i.e virus does best survivasl or virus does best contact)
           #mismatch= 0 is when contact rate is highest at low temp 
           parms_temp[["Climate_Variables"]]= list(time_at_peak=data_wider_means_summ[location_index,"peakT"]*7,range_C=c(data_wider_means_summ[location_index,"minT"],data_wider_means_summ[location_index,"maxT"]),Max_Climate_cr=i)
           mismatch=(i-parms_temp[["Climate_Variables"]][["range_C"]][1])/(parms_temp[["Climate_Variables"]][["range_C"]][2]-parms_temp[["Climate_Variables"]][["range_C"]][1])
-          #  mismatch=((i+22.774)/(26.865+22.774))
-          #test time<-as.vector(read.csv("../../Results/time.csv"))[,2]
           mismatch<-round(mismatch,2)
           if (abs(i-parms_temp[["Climate_Variables"]][["range_C"]][1])>abs(i-parms_temp[["Climate_Variables"]][["range_C"]][2])){
             s = v_scal *(-(parms_temp[["Climate_Variables"]][["range_C"]][1]- i) / 1.96)
@@ -80,7 +77,6 @@ integration_general<-function(parms,sims,time){
           colnames(temp_extra)<-c("country","lower","upper","peak_week","mismatch","T","R0","cr","q","week","combination","v_scal")
           temp_extra[,"T"]<-Climate_Time_Function(time = time[1:nrow(temp)],min=parms_temp[["Climate_Variables"]][["range_C"]][1],max=parms_temp[["Climate_Variables"]][["range_C"]][2],time_at_peak =parms_temp[["Climate_Variables"]][["time_at_peak"]] )
           temp_extra[,"R0"]<-find_R0_function(Climate=temp_extra[c(1:nrow(temp)),"T"],parms=parms_temp, Climate_Variables_Temp=parms_temp[["Climate_Variables"]], max_R0_Req=F)
-          #temp_extra[,"cr"]<-cr_climate(c(parms_temp[["Climate_Variables"]][["Max_Climate_cr"]],parms_temp[["Max_cr"]]),parms_temp[["Climate_Variables"]][["range_C"]],temp_extra[,"T"])
           temp_extra[,"cr"]<-cr_climate_quick(Max_Coordinates_cr = c(parms_temp[["Climate_Variables"]][["Max_Climate_cr"]],parms_temp[["Max_cr"]]),Climate=temp_extra[,"T"],s=s)
           
           temp_extra[,"q"]<-q_climate(parms_temp[["q0"]],parms_temp[["g"]],temp_extra[,"T"])
@@ -106,7 +102,6 @@ integration_general<-function(parms,sims,time){
           #mismatch= 0 is when contact rate is highest at low RH 
           parms_temp[["Climate_Variables"]]= list(time_at_peak=data_wider_means_summ[location_index,"peakRH"]*7,range_C=c(data_wider_means_summ[location_index,"minRH"],data_wider_means_summ[location_index,"maxRH"]),Max_Climate_cr=i)
           mismatch=(i-parms_temp[["Climate_Variables"]][["range_C"]][1])/(parms_temp[["Climate_Variables"]][["range_C"]][2]-parms_temp[["Climate_Variables"]][["range_C"]][1])
-          #test time<-as.vector(read.csv("../../Results/time.csv"))[,2]
           mismatch<-round(mismatch,2)
           if (abs(i-parms_temp[["Climate_Variables"]][["range_C"]][1])>abs(i-parms_temp[["Climate_Variables"]][["range_C"]][2])){
             s = v_scal*(-(parms_temp[["Climate_Variables"]][["range_C"]][1]- i) / 1.96)
@@ -119,7 +114,6 @@ integration_general<-function(parms,sims,time){
           colnames(temp_extra)<-c("country","lower","upper","peak_week","mismatch","RH","R0","cr","q","week","combination","v_scal")
           temp_extra[,"RH"]<-Climate_Time_Function(time = time[1:nrow(temp)],min=parms_temp[["Climate_Variables"]][["range_C"]][1],max=parms_temp[["Climate_Variables"]][["range_C"]][2],time_at_peak =parms_temp[["Climate_Variables"]][["time_at_peak"]] )
           temp_extra[,"R0"]<-find_R0_function(Climate=temp_extra[c(1:nrow(temp)),"RH"],parms=parms_temp, Climate_Variables_Temp=parms_temp[["Climate_Variables"]], max_R0_Req=F)
-          #temp_extra[,"cr"]<-cr_climate(c(parms_temp[["Climate_Variables"]][["Max_Climate_cr"]],parms_temp[["Max_cr"]]),parms_temp[["Climate_Variables"]][["range_C"]],temp_extra[,"RH"])
           temp_extra[,"cr"]<-cr_climate_quick(Max_Coordinates_cr = c(parms_temp[["Climate_Variables"]][["Max_Climate_cr"]],parms_temp[["Max_cr"]]),Climate=temp_extra[,"RH"],s=s)
           
           temp_extra[,"q"]<-q_climate(parms_temp[["q0"]],parms_temp[["g"]],temp_extra[,"RH"])
@@ -197,7 +191,6 @@ correlations<-function(mean,country){
   
 }
 
-#addidng latitude and pop info
 correlation_function<-function(model_means,parms){
   model_means$country<-data_wider_means_summ[model_means$country,"country"]
   correlation_df<- as_tibble(model_means)  %>% group_by(country,combination,mismatch,v_scal) 
@@ -223,7 +216,6 @@ correlation_function<-function(model_means,parms){
   }
   correlation_df<-as.data.frame(correlation_df)
   correlation_df<-cbind(correlation_df,matrix_extra)
-  #correlation_df$mismatch<-as.factor(correlation_df$mismatch)
   return(correlation_df)
 }
 
@@ -264,8 +256,7 @@ run_integration_var<-function(parms,sims_range){
     extra<-parms[["extra"]]
     model_means<-integration_general(parms,sims,time)
     write.csv(model_means,paste0("../../Results/fromfunction/var",sims,parms[["climate_label"]],extra,".csv"))
-    #model_means<-read.csv(paste0("../../Results/fromfunction/var",sims,parms[["climate_label"]],extra,".csv"))
-    
+
       correlation_df<-correlation_function(model_means,parms)
     write.csv(correlation_df,paste0("../../Results/fromfunction/cors/var",sims,parms[["climate_label"]],"correlation_dataframe",extra,".csv"))
       }

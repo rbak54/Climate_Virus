@@ -10,7 +10,6 @@ populations_deyle<-as.data.frame(matrix(nrow=length(countries_deyle),ncol=2))
 populations_deyle[,1]<-countries_deyle
 for (i in 1:nrow(populations_deyle)){
   if (populations_deyle[i,1] %in% RECENT$Country.Name ){
-    #value<-RECENT[which(RECENT$Country.Name==as.character(populations_deyle[i,1])),"X2019"]
     populations_deyle[i,2]<-RECENT[which(RECENT$Country.Name==as.character(populations_deyle[i,1])),"X2019"]
   }
 }
@@ -27,16 +26,15 @@ latlongs_deyle<-as.data.frame(matrix(nrow=length(countries_deyle), ncol=3))
 latlongs_deyle[,1]<-countries_deyle
 for (i in 1:nrow(latlongs_deyle)){
   if (latlongs_deyle[i,1] %in% latlong$country){
-    #value<-RECENT[which(RECENT$Country.Name==as.character(latlongs_deyle[i,1])),"X2019"]
     latlongs_deyle[i,2]<-latlong[which(latlong$country==as.character(latlongs_deyle[i,1])),"latitude"]
     latlongs_deyle[i,3]<-latlong[which(latlong$country==as.character(latlongs_deyle[i,1])),"longitude"]
     
   }
 }
-latlongs_deyle
+
 write.csv(latlongs_deyle,"../../Data/latlong/latlong_sel.csv")
-###shorter
-latlongs_deyle
+
+
 latlongs_deyle<-latlongs_deyle[which(latlongs_deyle$V1!="French Guiana"),]
 
 latlongs_deyle <- data.frame(lapply(latlongs_deyle, function(x) {gsub("Egypt", "Egypt, Arab Rep.", x)}))

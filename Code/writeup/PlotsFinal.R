@@ -4,7 +4,6 @@ require("tidyverse")
 require("ggplot2")
 
 sims_range=c(1,10)
-which_best<-function(country){
   return(data_wider_means[which(data_wider_means$country==country),"meanflu"])
 }  
 
